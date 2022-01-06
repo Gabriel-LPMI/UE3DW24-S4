@@ -4,32 +4,48 @@ import { Repository } from 'typeorm';
 import { Users } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
+import { bcryptSaltRounds } from 'src/auth/constants';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(Users)
-    private usersRepository: Repository<Users>
-) { }
+    constructor(
+        @InjectRepository(Users)
+        private usersRepository: Repository<Users>
+    ) { }
 
-  createUser(createUserDto: CreateUserDto) {
-    return this.usersRepository.save(createUserDto);
-  }
+    async createUser(createUserDto: CreateUserDto) {
+        createUserDto.password = await this.encrypt(createUserDto.password);
+        return this.usersRepository.save(createUserDto);
+    }
 
-  findAll() {
-    return this.usersRepository.find();
-  }
+    findAll() {
+        return this.usersRepository.find();
+    }
 
-  async findOne(id: number) {
-    await this.usersRepository.findOne(id);
-  }
+    async findOne(id: number) {
+        await this.usersRepository.findOne(id);
+    }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.usersRepository.update(id, updateUserDto);
-  }
+    async findUser(query: any): Promise<Users> {
+        return this.usersRepository.findOne(query);
+    }
 
-  async remove(id: number) {
-    await this.usersRepository.delete(id);
-  }
+    async update(id: number, updateUserDto: UpdateUserDto) {
+        await this.usersRepository.update(id, updateUserDto);
+    }
+
+    async remove(id: number) {
+        await this.usersRepository.delete(id);
+    }
+
+    // Encrypt the password pass by paremeter
+    async encrypt(password: string): Promise<any> {
+        return await bcrypt.hash(password, bcryptSaltRounds);
+    }
+
+   async hashCompare(reqPass, dbPass) {
+       return bcrypt.compare(reqPass, dbPass);
+   }
 
 }
