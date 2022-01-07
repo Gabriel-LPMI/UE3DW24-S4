@@ -2,8 +2,9 @@ export class CreateUserDto {
     id: number;
     firstname: string;
     lastname: string;
-    createdAt: Date;
-    updatedAt: Date;
     password: string;
     email: string;
+    createdAt: Date;
+    updatedAt: Date;
+   
 }

@@ -32,7 +32,15 @@ export class UsersService {
     }
 
     async update(id: number, updateUserDto: UpdateUserDto) {
-        await this.usersRepository.update(id, updateUserDto);
+        let user: any = {};
+
+        if (!!updateUserDto.password) {
+            const hash = await this.encrypt(updateUserDto.password);
+            user.password = hash;
+        }
+        return await this.usersRepository.update(id, {
+            ...updateUserDto, ...user.password
+        });
     }
 
     async remove(id: number) {
@@ -44,8 +52,8 @@ export class UsersService {
         return await bcrypt.hash(password, bcryptSaltRounds);
     }
 
-   async hashCompare(reqPass, dbPass) {
-       return bcrypt.compare(reqPass, dbPass);
-   }
+    async hashCompare(reqPass, dbPass) {
+        return bcrypt.compare(reqPass, dbPass);
+    }
 
 }

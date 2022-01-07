@@ -14,13 +14,12 @@ import { UsersRepository } from 'src/users/entities/user.entity';
         PassportModule,
         UsersModule,
         UsersRepository,
-        UsersService,
         JwtModule.register({
             secret: jwtConstants.secret,
-            signOptions: { expiresIn: process.env.JWT_EXPIRY_IN_SECONDS + 's' },
+            signOptions: { expiresIn: process.env.JWT_EXPIRY_IN_SECONDS+ 's' },
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy, UsersModule]
+    providers: [AuthService, JwtStrategy, ]
 })
 export class AuthModule { }
